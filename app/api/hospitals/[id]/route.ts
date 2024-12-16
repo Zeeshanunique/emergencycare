@@ -5,14 +5,14 @@ import Hospital from '@/models/Hospital';
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
+  { params }: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     await connectToDatabase();
     const input: HospitalInput = await request.json();
     
     const hospital = await Hospital.findByIdAndUpdate(
-      context.params.id,
+      params.id,
       input,
       { new: true, runValidators: true }
     );
