@@ -3,33 +3,39 @@ import { HospitalInput, HospitalApiResponse, ApiResponse } from '@/types';
 import connectToDatabase from '@/lib/mongodb';
 import Hospital from '@/models/Hospital';
 
-export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse<HospitalApiResponse>> {
-  try {
-    const { id } = context.params;
-    const input: HospitalInput = await request.json();
+type RouteParams = { params: { id: string } }
 
+export async function PUT(
+  req: NextRequest,
+  { params }: RouteParams
+): Promise<NextResponse> {
+  try {
     await connectToDatabase();
-    const hospital = await Hospital.findByIdAndUpdate(id, input, { new: true });
+    const input: HospitalInput = await req.json();
+    
+    const hospital = await Hospital.findByIdAndUpdate(
+      params.id,
+      input,
+      { new: true, runValidators: true }
+    );
 
     if (!hospital) {
-      return NextResponse.json({
-        success: false,
-        error: 'Hospital not found'
-      }, { status: 404 });
+      return NextResponse.json(
+        { success: false, error: 'Hospital not found' },
+        { status: 404 }
+      );
     }
 
-    return NextResponse.json({
-      success: true,
-      data: hospital
-    });
+    return NextResponse.json(
+      { success: true, data: hospital },
+      { status: 200 }
+    );
+
   } catch (error: any) {
-    return NextResponse.json({
-      success: false,
-      error: error.message
-    }, { status: 500 });
+    return NextResponse.json(
+      { success: false, error: error.message || 'Failed to update hospital' },
+      { status: 500 }
+    );
   }
 }
 
