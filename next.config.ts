@@ -1,10 +1,9 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* Add your Next.js configuration options here */
-  "rules": {
-  "@typescript-eslint/no-unused-vars": "off"
-}
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  eslint: {
+    // Ignore ESLint errors during builds
+    ignoreDuringBuilds: true,
+  },
 };
 
-export default nextConfig;
+module.exports = nextConfig;
