@@ -3,18 +3,16 @@ import { HospitalInput, HospitalApiResponse, ApiResponse } from '@/types';
 import connectToDatabase from '@/lib/mongodb';
 import Hospital from '@/models/Hospital';
 
-type RouteParams = { params: { id: string } }
-
 export async function PUT(
-  req: NextRequest,
-  { params }: RouteParams
+  request: NextRequest,
+  context: { params: { id: string } }
 ): Promise<NextResponse> {
   try {
     await connectToDatabase();
-    const input: HospitalInput = await req.json();
+    const input: HospitalInput = await request.json();
     
     const hospital = await Hospital.findByIdAndUpdate(
-      params.id,
+      context.params.id,
       input,
       { new: true, runValidators: true }
     );
