@@ -5,37 +5,31 @@ import Hospital from '@/models/Hospital';
 
 export async function PUT(
   request: NextRequest,
-  context: { params: { id: string } }
-): Promise<NextResponse> {
+  { params }: { params: { id: string } }
+): Promise<NextResponse<HospitalApiResponse>> {
   try {
-    const id = context.params.id;
+    const id = params.id;
     const input: HospitalInput = await request.json();
     
     await connectToDatabase();
-    const hospital = await Hospital.findByIdAndUpdate(id, input, { 
-      new: true,
-      runValidators: true
-    });
+    const hospital = await Hospital.findByIdAndUpdate(id, input, { new: true });
     
     if (!hospital) {
-      return NextResponse.json(
-        { success: false, error: 'Hospital not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ 
+        success: false, 
+        error: 'Hospital not found' 
+      }, { status: 404 });
     }
 
-    return NextResponse.json(
-      { success: true, data: hospital },
-      { status: 200 }
-    );
+    return NextResponse.json({ 
+      success: true, 
+      data: hospital 
+    });
   } catch (error: any) {
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: error.message || 'Failed to update hospital'
-      },
-      { status: 500 }
-    );
+    return NextResponse.json({ 
+      success: false, 
+      error: error.message 
+    }, { status: 500 });
   }
 }
 
