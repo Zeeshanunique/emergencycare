@@ -308,6 +308,7 @@ export default function AdminPage() {
                   <TableHead className="hidden md:table-cell">Address</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Beds</TableHead>
+                  <TableHead>Available Beds</TableHead>
                   <TableHead>Specialties</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
