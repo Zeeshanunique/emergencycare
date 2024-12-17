@@ -10,13 +10,23 @@ import { Building2, MapPin, Phone, Clock, Star, AlertCircle } from "lucide-react
 import { Hospital } from '@/types';
 import axios from 'axios';
 
-const SPECIALTIES = ['all', 'cardiology', 'emergency', 'neurology', 'orthopedics', 'pediatrics', 'surgery'] as const;
+const SPECIALTIES = [
+  { value: 'all', label: 'All Specialties' },
+  { value: 'cardiology', label: 'Cardiology' },
+  { value: 'emergency', label: 'Emergency' },
+  { value: 'neurology', label: 'Neurology' },
+  { value: 'orthopedics', label: 'Orthopedics' },
+  { value: 'pediatrics', label: 'Pediatrics' },
+  { value: 'surgery', label: 'Surgery' }
+] as const;
+
+type Specialty = typeof SPECIALTIES[number]['value'];
 
 export default function FindHospital() {
   const [hospitals, setHospitals] = useState<Hospital[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [specialty, setSpecialty] = useState<string>('all');
+  const [specialty, setSpecialty] = useState<Specialty>('all');
 
   useEffect(() => {
     fetchHospitals();
@@ -35,11 +45,13 @@ export default function FindHospital() {
   };
 
   const filteredHospitals = hospitals
-    .filter(h => h.openNow)
-    .filter(h => specialty === 'all' || h.specialties.includes(specialty))
-    .filter(h => 
-      h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.address.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(hospital => 
+      specialty === 'all' || 
+      hospital.specialties.map(s => s.toLowerCase()).includes(specialty)
+    )
+    .filter(hospital =>
+      hospital.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hospital.address.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .sort((a, b) => a.distance - b.distance);
 
@@ -47,20 +59,19 @@ export default function FindHospital() {
     <div className="container mx-auto p-4 space-y-6">
       <div className="flex flex-col md:flex-row gap-4">
         <Input
-          placeholder="Search by hospital name or location..."
+          placeholder="Search hospitals..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="md:w-2/3"
         />
-        <Select value={specialty} onValueChange={setSpecialty}>
+        <Select value={specialty} onValueChange={(value: Specialty) => setSpecialty(value)}>
           <SelectTrigger className="md:w-1/3">
             <SelectValue placeholder="Filter by specialty" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Specialties</SelectItem>
-            {SPECIALTIES.slice(1).map(s => (
-              <SelectItem key={s} value={s}>
-                {s.charAt(0).toUpperCase() + s.slice(1)}
+            {SPECIALTIES.map(({ value, label }) => (
+              <SelectItem key={value} value={value}>
+                {label}
               </SelectItem>
             ))}
           </SelectContent>
@@ -103,10 +114,10 @@ export default function FindHospital() {
                     <Phone className="h-4 w-4" />
                     <span>{hospital.phone}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  {/* <div className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
                     <span>Wait time: {hospital.waitTime}</span>
-                  </div>
+                  </div> */}
                   
                   <div className="flex flex-wrap gap-2 mt-4">
                     {hospital.specialties.map((specialty, index) => (

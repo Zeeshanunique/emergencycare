@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -42,7 +41,7 @@ const AVAILABLE_SPECIALTIES = [
 const INITIAL_FORM_DATA: FormData = {
   name: '',
   address: '',
-  phone: '',
+  phone: '0',
   beds: '0',
   availableBeds: '0',
   emergency: false,
@@ -208,6 +207,18 @@ export default function AdminPage() {
     }));
   };
 
+  // Stats calculation
+  const stats = {
+    totalHospitals: hospitals.length,
+    activeHospitals: hospitals.filter(h => h.openNow).length,
+    inactiveHospitals: hospitals.filter(h => !h.openNow).length,
+    totalBeds: hospitals.reduce((acc, h) => acc + (h.beds || 0), 0),
+    availableBeds: hospitals.reduce((acc, h) => 
+      acc + (h.openNow ? (h.availableBeds || 0) : 0), 0),
+    unavailableBeds: hospitals.reduce((acc, h) => 
+      acc + (h.openNow ? (h.beds - h.availableBeds) || 0 : h.beds), 0),
+  };
+
   return (
     <div className="container mx-auto p-4 space-y-6">
       {/* Stats Section */}
@@ -278,13 +289,22 @@ export default function AdminPage() {
                 <Clock className="h-6 w-6 text-yellow-600" />
               </div>
               <div>
-                <p className="text-sm font-medium text-muted-foreground">Active Now</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Bed Availability
+                </p>
                 {isLoading ? (
                   <Skeleton className="h-6 w-16" />
                 ) : (
-                  <h3 className="text-2xl font-bold">
-                    {hospitals.filter(h => h.openNow).length}
-                  </h3>
+                  <>
+                    <h3 className="text-2xl font-bold">
+                      {stats.availableBeds}
+                    </h3>
+                    <div className="text-sm text-muted-foreground">
+                      <span className="text-green-600">{stats.activeHospitals} Active</span>
+                      <span className="mx-2">•</span>
+                      <span className="text-red-600">{stats.inactiveHospitals} Inactive</span>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -306,10 +326,12 @@ export default function AdminPage() {
                 <TableRow>
                   <TableHead>Name</TableHead>
                   <TableHead className="hidden md:table-cell">Address</TableHead>
+                  <TableHead>Distance</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Beds</TableHead>
                   <TableHead>Available Beds</TableHead>
                   <TableHead>Specialties</TableHead>
+                  <TableHead>Rating</TableHead>
                   <TableHead>Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -343,6 +365,9 @@ export default function AdminPage() {
                       </TableCell>
                       <TableCell className="hidden md:table-cell">
                         {hospital.address}
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {hospital.distance}km
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -379,6 +404,9 @@ export default function AdminPage() {
                             </Badge>
                           ))}
                         </div>
+                      </TableCell>
+                      <TableCell className="hidden md:table-cell">
+                        {hospital.rating}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>
@@ -423,7 +451,7 @@ export default function AdminPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid gap-4 py-4">
               <div className="grid gap-2">
-                <Label htmlFor="name">Hospital Name</Label>
+                <Label htmlFor="name">Hospital Name:</Label>
                 <Input
                   id="name"
                   value={formData.name}
@@ -442,6 +470,18 @@ export default function AdminPage() {
                   required
                 />
               </div>
+              <div className="grid gap-2">
+                <Label htmlFor="address">Distance</Label>
+                <Input
+                  id="distance"
+                  type="number"
+                  value={formData.distance}
+                  onChange={(e) => setFormData({...formData, distance: e.target.value})}
+                  className="col-span-3"
+                  required
+                />
+              </div>
+            
               <div className="grid gap-2">
                 <Label htmlFor="contact">Contact</Label>
                 <Input
@@ -496,6 +536,21 @@ export default function AdminPage() {
                     </Badge>
                   ))}
                 </div>
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="availableBeds">Rating:</Label>
+                <Input
+                  id="rating"
+                  type="number"
+                  value={formData.rating}
+                  onChange={(e) => setFormData({
+                    ...formData,
+                    rating: e.target.value || '0'
+                  })}
+                  className="col-span-3"
+                  min={0}
+                  required
+                />
               </div>
             </div>
             <DialogFooter>

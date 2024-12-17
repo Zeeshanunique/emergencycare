@@ -2,7 +2,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { 
-  Building2, // Changed from Hospital
+  Building2, 
   Navigation, 
   Bell,
   CheckCircle,
@@ -10,73 +10,119 @@ import {
   HeartPulse,
   Clock,
   Users,
-  Ambulance 
+  Ambulance,
+  LayoutDashboard,
+  Menu
 } from "lucide-react"
 import Link from "next/link";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Home() {
   return (
     <>
-      {/* Sticky Header */}
-      <header className="sticky top-0 z-50 backdrop-blur-sm border-b bg-white/75">
-        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <HeartPulse className="h-6 w-6 text-red-600" />
-            <span className="font-bold text-xl">EmergencyCare</span>
-          </Link>
-          <Button variant="destructive" size="sm">
-            <Phone className="h-4 w-4 mr-2" />
-            Emergency: 911
-          </Button>
+      <header className="sticky top-0 bg-white/80 backdrop-blur-sm border-b z-50">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <Link 
+              href="/" 
+              className="flex items-center gap-2 text-xl font-bold text-gray-900"
+            >
+              <HeartPulse className="h-6 w-6 text-red-600" />
+              <span>EmergencyCare</span>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-6">
+              <Link 
+                href="/findhospital"
+                className="text-gray-600 hover:text-gray-900 transition-colors font-medium"
+              >
+                Find Hospital
+              </Link>
+              
+              <Link href="/admin">
+                <Button 
+                  variant="default" 
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-2" />
+                  Admin Dashboard
+                </Button>
+              </Link>
+            </nav>
+
+            {/* Mobile Navigation */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild className="md:hidden">
+                <Button variant="ghost" size="icon">
+                  <Menu className="h-6 w-6" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link href="/findhospital">Find Hospital</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/about">About</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/contact">Contact</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">Dashboard</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </header>
 
-      <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-red-50">
+      <div className="min-h-screen bg-white">
         {/* Hero Section */}
-        <section className="container mx-auto px-4 py-24 flex flex-col md:flex-row items-center">
-          <div className="md:w-1/2 space-y-6">
-            <div className="inline-block">
-              <span className="bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-semibold">
-                24/7 Emergency Care
-              </span>
-            </div>
-            <h1 className="text-5xl font-extrabold tracking-tight lg:text-6xl text-blue-900">
-              Immediate Medical <span className="text-red-600">Care</span> When Every Second Counts
+        <section className="container mx-auto px-6 py-16">
+          <div className="max-w-3xl mx-auto text-center space-y-8">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+              Find Emergency Care <span className="text-red-600">Instantly</span>
             </h1>
-            <p className="text-xl text-gray-600 leading-relaxed">
-              Find the nearest emergency care instantly with real-time hospital availability and wait times.
+            
+            <p className="text-lg text-gray-600">
+              Locate nearby hospitals with real-time availability
             </p>
-            <div className="flex gap-4 pt-4">
-              <Link href="/findhospital">
-                <Button size="lg" variant="destructive" className="group">
-                  Find Nearest Hospital
-                  <Navigation className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              </Link>
-              <Link href="/admin">
-              <Button size="lg" variant="outline" className="group">
-                Admin Dashboard
-                <Clock className="ml-2 h-4 w-4 transition-transform group-hover:rotate-12" />
-              </Button>
-              </Link>
-            </div>
-          </div>
 
-          <div className="md:w-1/2 mt-12 md:mt-0 grid grid-cols-2 gap-4">
-            {[
-              { icon: <Users className="h-8 w-8" />, stat: "2M+", label: "Patients Helped" },
-              { icon: <Building2 className="h-8 w-8" />, stat: "500+", label: "Partner Hospitals" },
-              { icon: <Ambulance className="h-8 w-8" />, stat: "15 min", label: "Avg Response Time" },
-              { icon: <HeartPulse className="h-8 w-8" />, stat: "98%", label: "Success Rate" }
-            ].map((item, index) => (
-              <Card key={index} className="bg-white/50 backdrop-blur-sm hover:bg-white/75 transition-all">
-                <CardContent className="pt-6 text-center">
-                  <div className="text-red-600 mb-2 flex justify-center">{item.icon}</div>
-                  <h3 className="text-2xl font-bold text-blue-900">{item.stat}</h3>
-                  <p className="text-sm text-gray-600">{item.label}</p>
-                </CardContent>
-              </Card>
-            ))}
+            <Link 
+              href="/findhospital"
+              className="inline-block bg-red-600 text-white px-8 py-3 rounded-lg hover:bg-red-700 transition-colors"
+            >
+              Find Hospital
+            </Link>
+          </div>
+        </section>
+
+        {/* Features Grid */}
+        <section className="container mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 text-center">
+              <Building2 className="h-8 w-8 mx-auto mb-4 text-gray-700" />
+              <h3 className="text-lg font-semibold mb-2">Nearby Hospitals</h3>
+              <p className="text-gray-600">Find hospitals closest to you</p>
+            </div>
+
+            <div className="p-6 text-center">
+              <Clock className="h-8 w-8 mx-auto mb-4 text-gray-700" />
+              <h3 className="text-lg font-semibold mb-2">Wait Times</h3>
+              <p className="text-gray-600">Check current wait times</p>
+            </div>
+
+            <div className="p-6 text-center">
+              <Ambulance className="h-8 w-8 mx-auto mb-4 text-gray-700" />
+              <h3 className="text-lg font-semibold mb-2">Emergency Services</h3>
+              <p className="text-gray-600">24/7 emergency care</p>
+            </div>
           </div>
         </section>
         

@@ -33,7 +33,7 @@ export default function HospitalCard({ hospital, onEdit, onDelete }: HospitalCar
         </div>
         <div className="flex items-center gap-2">
           <Bed className="h-4 w-4 text-gray-500" />
-          <span>Available Beds: {String(hospital.availableBeds || 0)}</span>
+          <span>Available Beds {String(hospital.availableBeds || 0)}</span>
         </div>
       </div>
 

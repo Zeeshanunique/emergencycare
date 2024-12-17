@@ -4,7 +4,6 @@ const nextConfig = {
     // Ignore ESLint errors during builds
     ignoreDuringBuilds: true,
   },
-  
 };
 
 module.exports = nextConfig;
